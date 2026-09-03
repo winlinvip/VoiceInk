@@ -25,7 +25,7 @@ class LicenseViewModel: ObservableObject {
     private let licenseManager = LicenseManager.shared
 
     init() {
-        #if LOCAL_BUILD
+        #if LOCAL_BUILD || true
         licenseState = .licensed
         #else
         loadLicenseState()
