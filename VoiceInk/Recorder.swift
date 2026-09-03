@@ -14,6 +14,7 @@ class Recorder: NSObject, ObservableObject {
     private let mediaController = MediaController.shared
     private let playbackController = PlaybackController.shared
     @Published var audioMeter = AudioMeter(averagePower: 0, peakPower: 0)
+    @Published var recordingStartTime: Date?
     private var audioMeterUpdateTimer: DispatchSourceTimer?
     private let audioMeterQueue = DispatchQueue(label: "com.prakashjoshipax.voiceink.audiometer", qos: .userInteractive)
     /// Dedicated serial queue for hardware setup.
@@ -152,6 +153,7 @@ class Recorder: NSObject, ObservableObject {
                 }
             }
 
+            recordingStartTime = Date()
             startAudioMeterTimer()
             pauseMedia()
         } catch {
@@ -168,6 +170,7 @@ class Recorder: NSObject, ObservableObject {
         mediaPauseTask = nil
         audioMeterUpdateTimer?.cancel()
         audioMeterUpdateTimer = nil
+        recordingStartTime = nil
 
         // Capture current recorder to stop it on the serial hardware queue.
         let currentRecorder = self.recorder

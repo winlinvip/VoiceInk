@@ -53,7 +53,7 @@ struct NotchRecorderView<S: RecorderStateProvider & ObservableObject>: View {
 
     // MARK: - Layout Constants
 
-    private let recordingSideExpansion: CGFloat = 90
+    private let recordingSideExpansion: CGFloat = 120 // widened from 90 to fit the recording duration label
     private let transcriptSideExpansion: CGFloat = 110
     private let assistantSideExpansion: CGFloat = 230
     private let activeHeightBonus: CGFloat = 6
@@ -173,6 +173,10 @@ struct NotchRecorderView<S: RecorderStateProvider & ObservableObject>: View {
 
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
+                if stateProvider.recordingState == .recording, let recordingStartTime = recorder.recordingStartTime {
+                    RecordingDurationView(startTime: recordingStartTime)
+                        .padding(.trailing, 6)
+                }
                 RecorderStatusDisplay(
                     currentState: stateProvider.recordingState,
                     audioMeter: recorder.audioMeter,

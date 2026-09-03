@@ -13,6 +13,7 @@ struct MiniRecorderView<S: RecorderStateProvider & ObservableObject>: View {
 
     private let controlBarHeight: CGFloat = 40
     private let compactWidth: CGFloat = 184
+    private let recordingWidth: CGFloat = 220
     private let expandedWidth: CGFloat = 300
     private let assistantWidth: CGFloat = 520
     private let compactCornerRadius: CGFloat = 20
@@ -23,6 +24,10 @@ struct MiniRecorderView<S: RecorderStateProvider & ObservableObject>: View {
         showLiveTranscript
             && stateProvider.recordingState == .recording
             && !stateProvider.partialTranscript.isEmpty
+    }
+
+    private var recordingStartTime: Date? {
+        stateProvider.recordingState == .recording ? recorder.recordingStartTime : nil
     }
 
     private var hasAssistantResponse: Bool {
@@ -55,6 +60,11 @@ struct MiniRecorderView<S: RecorderStateProvider & ObservableObject>: View {
             .padding(.leading, 10)
 
             Spacer(minLength: 0)
+
+            if let recordingStartTime {
+                RecordingDurationView(startTime: recordingStartTime)
+                    .padding(.trailing, 6)
+            }
 
             RecorderStatusDisplay(
                 currentState: stateProvider.recordingState,
@@ -95,11 +105,13 @@ struct MiniRecorderView<S: RecorderStateProvider & ObservableObject>: View {
             }
             controlBar
         }
-        .frame(width: hasAssistantResponse ? assistantWidth : (hasLiveTranscript ? expandedWidth : compactWidth))
+        // recordingWidth case added to fit the recording duration label
+        .frame(width: hasAssistantResponse ? assistantWidth : (hasLiveTranscript ? expandedWidth : (recordingStartTime != nil ? recordingWidth : compactWidth)))
         .background(Color.black)
         .clipShape(RoundedRectangle(cornerRadius: hasLiveTranscript || hasAssistantResponse ? expandedCornerRadius : compactCornerRadius, style: .continuous))
         .animation(.easeInOut(duration: 0.3), value: hasLiveTranscript)
         .animation(.easeInOut(duration: 0.3), value: hasAssistantResponse)
+        .animation(.easeInOut(duration: 0.3), value: recordingStartTime)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
     }
 }
