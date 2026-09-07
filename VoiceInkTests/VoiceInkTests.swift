@@ -14,4 +14,10 @@ struct VoiceInkTests {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
     }
 
+    @Test func appendsRecordingDurationOnANewLine() {
+        let output = TranscriptionDurationAppender.append(to: "Hello world.", duration: 65.9)
+
+        #expect(output == "Hello world.\nDuration: 1:05")
+    }
+
 }

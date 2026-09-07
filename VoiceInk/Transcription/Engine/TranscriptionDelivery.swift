@@ -12,6 +12,12 @@ final class TranscriptionDelivery {
         let responseConfig: EnhancementRuntimeConfiguration?
         let responseError: String?
         let isAssistantFollowUp: Bool
+
+        var transcriptOutputText: String? {
+            guard let text else { return nil }
+            guard output.mode?.appendTranscriptionDuration == true else { return text }
+            return TranscriptionDurationAppender.append(to: text, duration: transcription.duration)
+        }
     }
 
     struct Actions {
@@ -44,7 +50,7 @@ final class TranscriptionDelivery {
             return
         }
 
-        if let text = request.text {
+        if let text = request.transcriptOutputText {
             await paste(text, output: request.output, actions: actions)
         } else {
             await actions.dismiss()
@@ -77,7 +83,7 @@ final class TranscriptionDelivery {
     }
 
     private func deliverCustomCommand(_ item: Request, actions: Actions) async {
-        guard let text = item.text else {
+        guard let text = item.transcriptOutputText else {
             notifyCustomCommandFailure(CustomCommandDeliveryError.noTextToDeliver)
             SoundManager.shared.playStopSound()
             await actions.dismiss()
@@ -177,5 +183,13 @@ final class TranscriptionDelivery {
         }
 
         return textToDeliver
+    }
+}
+
+enum TranscriptionDurationAppender {
+    static func append(to text: String, duration: TimeInterval) -> String {
+        let totalSeconds = max(0, Int(duration))
+        let formattedDuration = String(format: "%d:%02d", totalSeconds / 60, totalSeconds % 60)
+        return "\(text)\n\(String(localized: "Duration")): \(formattedDuration)"
     }
 }

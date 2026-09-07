@@ -84,12 +84,14 @@ struct ModeConfig: Codable, Identifiable, Equatable {
     var selectedAIModel: String?
     var outputMode: ModeOutputMode = .paste
     var autoSendKey: AutoSendKey = .none
+    var appendTranscriptionDuration: Bool = false
     var customCommand: ModeCustomCommand?
     var isEnabled: Bool = true
     var isDefault: Bool = false
 
     enum CodingKeys: String, CodingKey {
         case id, name, icon, appConfigs, urlConfigs, triggerGroups, triggerWords, isAIEnhancementEnabled, selectedPrompt, isRealtimeTranscriptionEnabled, selectedLanguage, isTextFormattingEnabled, useClipboardContext, useSelectedTextContext, useScreenCapture, selectedAIProvider, selectedAIModel, outputMode, isAutoSendEnabled, autoSendKey, customCommand, isEnabled, isDefault
+        case appendTranscriptionDuration
         case legacyEmoji = "emoji"
         case selectedWhisperModel
         case selectedTranscriptionModelName
@@ -179,6 +181,7 @@ struct ModeConfig: Codable, Identifiable, Equatable {
         } else {
             autoSendKey = .none
         }
+        appendTranscriptionDuration = try container.decodeIfPresent(Bool.self, forKey: .appendTranscriptionDuration) ?? false
         isEnabled = try container.decodeIfPresent(Bool.self, forKey: .isEnabled) ?? true
         isDefault = try container.decodeIfPresent(Bool.self, forKey: .isDefault) ?? false
 
@@ -212,6 +215,7 @@ struct ModeConfig: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(selectedAIModel, forKey: .selectedAIModel)
         try container.encode(outputMode, forKey: .outputMode)
         try container.encode(autoSendKey, forKey: .autoSendKey)
+        try container.encode(appendTranscriptionDuration, forKey: .appendTranscriptionDuration)
         try container.encodeIfPresent(customCommand, forKey: .customCommand)
         try container.encodeIfPresent(selectedTranscriptionModelName, forKey: .selectedTranscriptionModelName)
         try container.encode(isEnabled, forKey: .isEnabled)

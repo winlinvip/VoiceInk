@@ -542,6 +542,13 @@ struct ModeConfigFormView: View {
                 }
             }
 
+            Toggle(isOn: $draft.appendTranscriptionDuration) {
+                HStack(spacing: 6) {
+                    Text("Append duration")
+                    InfoTip("Adds the recording duration on a new line at the end of the transcript output.")
+                }
+            }
+
             if draft.outputMode == .customCommand {
                 customCommandControls
             }

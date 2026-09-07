@@ -21,6 +21,7 @@ struct ModeConfigDraft {
     var selectedAIModel: String?
     var outputMode: ModeOutputMode
     var autoSendKey: AutoSendKey
+    var appendTranscriptionDuration: Bool
     var customCommand: String
     var isDefault: Bool
     var isTranscriptionFormattingExpanded: Bool
@@ -52,6 +53,7 @@ struct ModeConfigDraft {
             selectedAIModel = inheritedConfig?.selectedAIModel
             outputMode = .paste
             autoSendKey = .none
+            appendTranscriptionDuration = false
             customCommand = inheritedConfig?.customCommand?.command ?? ""
             isDefault = false
             isTranscriptionFormattingExpanded = false
@@ -79,6 +81,7 @@ struct ModeConfigDraft {
             selectedAIModel = latestConfig.selectedAIModel
             outputMode = latestConfig.outputMode
             autoSendKey = latestConfig.autoSendKey
+            appendTranscriptionDuration = latestConfig.appendTranscriptionDuration
             customCommand = latestConfig.customCommand?.command ?? ""
             isDefault = latestConfig.isDefault
             isTranscriptionFormattingExpanded = false
@@ -163,7 +166,7 @@ struct ModeConfigDraft {
 
         switch mode {
         case .add:
-            return ModeConfig(
+            var config = ModeConfig(
                 id: id,
                 name: name,
                 icon: icon,
@@ -187,6 +190,8 @@ struct ModeConfigDraft {
                 customCommand: savedCustomCommand,
                 isDefault: savedIsDefault
             )
+            config.appendTranscriptionDuration = appendTranscriptionDuration
+            return config
 
         case .edit(let config):
             var updatedConfig = sourceConfig ?? config
@@ -209,6 +214,7 @@ struct ModeConfigDraft {
             updatedConfig.selectedAIModel = selectedAIModel
             updatedConfig.outputMode = outputMode
             updatedConfig.autoSendKey = savedAutoSendKey
+            updatedConfig.appendTranscriptionDuration = appendTranscriptionDuration
             updatedConfig.customCommand = savedCustomCommand
             updatedConfig.isDefault = savedIsDefault
             return updatedConfig
